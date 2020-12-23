@@ -1,6 +1,4 @@
 from tkinter import *
-import sys
-import random
 
 class MyWindow:
     error = ''
