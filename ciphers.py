@@ -258,8 +258,7 @@ class MyWindow:
     def getRailFenceTranslatedMessage(self):
         mode = self.getMode()
         message = self.getMessage()
-        key = self.getKey()
-        key = int(key)
+        key = int(self.getKey())
 
         row, col = 0, 0
         rail = [['\n' for i in range(len(message))] for j in range(key)]
