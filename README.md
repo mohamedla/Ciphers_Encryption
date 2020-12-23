@@ -3,7 +3,7 @@ An GUI application that encrypt and decrypt multi ciphers (Caesar, Monoalphabeti
 
 Must have python 3 installed in your device
 
-That GUI take 3 inputs 
+            That GUI take 3 inputs 
 
             - First the mode take (encrypt or e or decryption or d)
             
