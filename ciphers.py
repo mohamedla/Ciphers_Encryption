@@ -59,7 +59,9 @@ class MyWindow:
         keyList.sort()
         lettersList.sort()
         if keyList != lettersList:
-            sys.exit('There is an error in the key or symbol set.')
+            return 0
+        else:
+            return 1
 
 # Ciphers
 #     Ceaser Cipher
@@ -95,24 +97,24 @@ class MyWindow:
         message = self.getMessage()
         key = self.getKey()
         LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        self.checkValidKey()
-        translated = ''
-        charsA = LETTERS
-        charsB = key.upper()
-        if mode[0] == 'd':
-            char = charsA
-            charsA = charsB
-            charsB = char
-        for symbol in message:
-            if symbol.upper() in charsA:
-                symIndex = charsA.find(symbol.upper())
-                if symbol.isupper():
-                    translated += charsB[symIndex].upper()
+        if self.checkValidKey():
+            translated = ''
+            charsA = LETTERS
+            charsB = key.upper()
+            if mode[0] == 'd':
+                char = charsA
+                charsA = charsB
+                charsB = char
+            for symbol in message:
+                if symbol.upper() in charsA:
+                    symIndex = charsA.find(symbol.upper())
+                    if symbol.isupper():
+                        translated += charsB[symIndex].upper()
+                    else:
+                        translated += charsB[symIndex].lower()
                 else:
-                    translated += charsB[symIndex].lower()
-            else:
-                translated += symbol
-        self.t3.insert(END, str(translated))
+                    translated += symbol
+            self.t3.insert(END, str(translated))
 #   Playfair Cipher
     def getPlayfairTranslatedMessage(self):
         mode = self.getMode()
