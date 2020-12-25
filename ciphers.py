@@ -318,6 +318,6 @@ class MyWindow:
 
 window=Tk()
 mywin=MyWindow(window)
-window.title('Hello Python')
+window.title('Ciphers')
 window.geometry("450x320+10+10")
 window.mainloop()
