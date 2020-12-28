@@ -1,4 +1,7 @@
 from tkinter import *
+import sys
+import random
+import re
 
 class MyWindow:
     error = ''
@@ -11,29 +14,30 @@ class MyWindow:
         self.einfo=Label(win, text=self.error)
         self.scrollbar = Scrollbar(orient=VERTICAL)
         self.t1=Entry(bd=3, xscrollcommand = self.scrollbar.set)
-        self.t2=Entry(bd=3)
+        self.t2=Text(bd=3)
         self.t4=Entry(bd=3)
-        self.t3=Entry(bd=3)
+        self.t3=Text(bd=3)
+        self.t3.config(state='disabled')
         self.info1.place(x=100, y=10)
         self.lbl1.place(x=100, y=40)
-        self.t1.place(x=200, y=40 ,width=150,)
+        self.t1.place(x=200, y=40 ,width=250,)
         self.lbl2.place(x=100, y=80)
-        self.t2.place(x=200, y=80 ,width=150)
-        self.lbl4.place(x=100, y=120)
-        self.t4.place(x=200, y=120 ,width=150)
+        self.t2.place(x=200, y=80 ,width=250,height=180)
+        self.lbl4.place(x=100, y=270)
+        self.t4.place(x=200, y=270 ,width=250)
         self.b1=Button(win, text='Caesar', command=self.getCaesarTranslatedMessage)
         self.b2=Button(win, text='Monoalphabetic', command = self.getMonoalphabeticTranslatedMessage)
         self.b3 = Button(win, text='Playfair', command = self.getPlayfairTranslatedMessage)
         self.b4 = Button(win, text='Vigenere', command = self.getVigenereTranslatedMessage)
         self.b5 = Button(win, text='Rail Fence', command = self.getRailFenceTranslatedMessage)
-        self.b1.place(x=160, y=150)
-        self.b2.place(x=240, y=150)
-        self.b3.place(x=130, y=190)
-        self.b4.place(x=210, y=190)
-        self.b5.place(x=290, y=190)
-        self.lbl3.place(x=100, y=250)
-        self.t3.place(x=200, y=250 ,width=150)
-        self.einfo.place(x=100, y=260)
+        self.b1.place(x=240, y=300)
+        self.b2.place(x=320, y=300)
+        self.b3.place(x=210, y=340)
+        self.b4.place(x=290, y=340)
+        self.b5.place(x=370, y=340)
+        self.lbl3.place(x=100, y=400)
+        self.t3.place(x=200, y=400 ,width=250,height=180)
+        self.einfo.place(x=100, y=410)
 
     def getMode(self):
         mode = self.t1.get().lower()
@@ -43,7 +47,8 @@ class MyWindow:
             self.error = 'Enter either "encrypt" or "e" or "decrypt" or "d".'
 
     def getMessage(self):
-        return self.t2.get()
+        message = self.t2.get('1.0','end')
+        return str(message)
 
     def getKey(self):
         key = self.t4.get()
@@ -88,7 +93,11 @@ class MyWindow:
                     translated += chr(num)
                 else:
                     translated += symbol
+            self.t3.config(state='normal')
+            self.t3.delete('1.0','end')
             self.t3.insert(END, str(translated))
+            self.t3.config(state='disabled')
+            
     # Monoalphabetic Cipher
     def getMonoalphabeticTranslatedMessage(self):
         mode = self.getMode()
@@ -104,27 +113,31 @@ class MyWindow:
                 charsA = charsB
                 charsB = char
             for symbol in message:
-                if symbol.upper() in charsA:
-                    symIndex = charsA.find(symbol.upper())
-                    if symbol.isupper():
-                        translated += charsB[symIndex].upper()
+                if symbol.isalpha():
+                    if symbol.upper() in charsA:
+                        symIndex = charsA.find(symbol.upper())
+                        if symbol.isupper():
+                            translated += charsB[symIndex].upper()
+                        else:
+                            translated += charsB[symIndex].lower()
                     else:
-                        translated += charsB[symIndex].lower()
+                        translated += symbol
                 else:
                     translated += symbol
+            self.t3.config(state='normal')
+            self.t3.delete('1.0','end')
             self.t3.insert(END, str(translated))
+            self.t3.config(state='disabled')
 #   Playfair Cipher
     def getPlayfairTranslatedMessage(self):
         mode = self.getMode()
         message = self.getMessage()
         key = self.getKey()
-
         key = key.replace(" ", "")
         key = key.upper()
 
         message = message.upper()
-        message = message.replace(" ", "")
-
+        message = 'X'.join(re.findall(r"(?i)\b[a-z]+\b", message))
         def matrix(x, y, initial):
             return [[initial for i in range(x)] for j in range(y)]
 
@@ -190,7 +203,10 @@ class MyWindow:
                     translated += my_matrix[loc1[0]][loc[1]]
                 i = i + 2
             translated = translated.lower()
+            self.t3.config(state='normal')
+            self.t3.delete('1.0','end')
             self.t3.insert(END, str(translated))
+            self.t3.config(state='disabled')
         elif mode[0] == 'd':
             translated = ''
             i = 0
@@ -210,7 +226,10 @@ class MyWindow:
                     translated += my_matrix[loc1[0]][loc[1]]
                 i = i + 2
             translated = translated.lower()
+            self.t3.config(state='normal')
+            self.t3.delete('1.0','end')
             self.t3.insert(END, str(translated))
+            self.t3.config(state='disabled')
 
 #   Playfair Cipher
     def getVigenereTranslatedMessage(self):
@@ -220,43 +239,46 @@ class MyWindow:
         key = self.getKey()
         alphabets = "abcdefghijklmnopqrstuvwxyz"
         translated = ''
-        if message.isalpha():
-            if key.isalpha():
-                kpos = []
-                if mode[0] == 'e':
-                    for x in key:
-                        kpos.append(alphabets.find(x))
-                    i = 0
-                    for x in message:
-                        if x != ' ':
-                            if i == len(kpos):
-                                i = 0
-                            pos = alphabets.find(x) + kpos[i]
-                            if pos > 25:
-                                pos = pos - 26
-                            translated += alphabets[pos].capitalize()
-                            i += 1
-                        else:
-                            translated += x
-                elif mode[0] == 'd':
-                    for x in key:
-                        kpos.append(alphabets.find(x))
-                    i = 0
-                    for x in message:
+        if key.isalpha():
+            kpos = []
+            if mode[0] == 'e':
+                for x in key:
+                    kpos.append(alphabets.find(x))
+                i = 0
+                for x in message:
+                    if x.isalpha():
                         if i == len(kpos):
                             i = 0
-                        pos = alphabets.find(x.lower()) - kpos[i]
-                        if pos < 0:
-                            pos = pos + 26
-                        translated += alphabets[pos].lower()
+                        pos = alphabets.find(x) + kpos[i]
+                        if pos > 25:
+                            pos = pos - 26
+                        translated += alphabets[pos].capitalize()
                         i += 1
+                    else:
+                        translated += x
+            elif mode[0] == 'd':
+                for x in key:
+                    kpos.append(alphabets.find(x))
+                i = 0
+                for x in message:
+                    if i == len(kpos):
+                        i = 0
+                    pos = alphabets.find(x.lower()) - kpos[i]
+                    if pos < 0:
+                        pos = pos + 26
+                    translated += alphabets[pos].lower()
+                    i += 1
         translated = translated.lower()
+        self.t3.config(state='normal')
+        self.t3.delete('1.0','end')
         self.t3.insert(END, str(translated))
+        self.t3.config(state='disabled')
 #   Rail Fence Cipher
     def getRailFenceTranslatedMessage(self):
         mode = self.getMode()
         message = self.getMessage()
-        key = int(self.getKey())
+        key = self.getKey()
+        key = int(key)
 
         row, col = 0, 0
         rail = [['\n' for i in range(len(message))] for j in range(key)]
@@ -277,7 +299,10 @@ class MyWindow:
                     if rail[i][j] != '\n':
                         result.append(rail[i][j])
             translated = "".join(result)
+            self.t3.config(state='normal')
+            self.t3.delete('1.0','end')
             self.t3.insert(END, str(translated))
+            self.t3.config(state='disabled')
         elif mode[0] == 'd':
             dir_down = None
             for i in range(len(message)):
@@ -313,12 +338,15 @@ class MyWindow:
                 else:
                     row -= 1
             translated = "".join(result)
+            self.t3.config(state='normal')
+            self.t3.delete('1.0','end')
             self.t3.insert(END, str(translated))
+            self.t3.config(state='disabled')
 
 
 window=Tk()
 mywin=MyWindow(window)
-window.title('Ciphers')
-window.geometry("450x320+10+10")
-root.resizable(width = False , height = False) 
+window.title('Hello Python')
+window.geometry("550x600+10+10")
+window.resizable(width = False , height = False) 
 window.mainloop()
